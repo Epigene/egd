@@ -31,6 +31,17 @@ What we need for expedience is a way to de-"normalize" the data in PGN, to expan
 
 This is what EGD does. It is a denormalized way to represent a game of chess.
 
+### Position equality
+A consise way to represent any __diagram__ of a chess position is the [Forsyth–Edwards Notation (FEN)](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation). However, for our purposes it is not sufficient, as it does not contain some crucial meta-information on repetition count etc.
+
+Discussions of what a chess __position__ is, especially in a digital analysis setting, have yielded a conclusion that beyond the producing move and resulting piece placement, this information must be included:
+
+1. possible en-passant capture square (irrespective of any legal possibility to execute such a capture),
+2. TODO 3-repeat rule (possibility of draw)
+3. 50-move rule (forced draw)
+4. FIDE's 70-move rule (forced draw)
+5. ??
+
 ## EGD details
 
 EGD is based on [Extended Position Description (EPD)](https://chessprogramming.wikispaces.com/Extended+Position+Description)

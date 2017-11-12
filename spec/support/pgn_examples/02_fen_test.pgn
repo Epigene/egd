@@ -1,0 +1,52 @@
+[Event "Eurotel Trophy"]
+[Site "Prague CZE"]
+[Date "2002.04.30"]
+[Round "2.1"]
+[White "Polgar, Judit"]
+[Black "Kasparov, Garri"]
+[Result "0-1"]
+[ECO "B33"]
+[WhiteElo "2677"]
+[BlackElo "2838"]
+[EventDate "2002.04.28"]
+[Annotator "Hathaway, Mark"]
+
+1. e4 c5 2. Nf3 Nc6 { In some cases this restrains Pe4 sufficient to allow ...Ng8-f6, but in some other cases Black needs more control of e5. } ( 2...d6 )
+3. d4 cxd4 4. Nxd4 Nf6
+5. Nc3 { Now Black has to decide how to prevent Nxc6 and e4-e5. To that end Black has played ...d6 (Scheveningen) , ...e5 (Sveshnikov) and ...Qb6 (Benko) . All have good qualities. }
+5...e5
+6. Ndb5 { If White doesn't try to exploit the weakness at d6 then his pieces become too passive. }
+6...d6 7. Bg5 a6
+8. Na3 b5 { threatening ...b4 and preventing Na3-c4-e3 }
+9. Bxf6 ( 9. Nd5 )
+9...gxf6 { It seems odd that Black would allow such a pawn structure, but he can't easily be prevented from ...f6-f5xe4 to give him an advantage in central pawns. That the position has many weaknesses gives White room to develop and fight for a win. }
+10. Nd5 Bg7 11. c3 f5
+12. Bd3 ( 12. exf5 Bxf5 13. Qf3 Be6 ) ( 12. Nc2 $6 fxe4 { and Nc2 doesn't exactly fit into any part of the board. With Black ready to play ...f5 the king-side is safe and Nd5 occupies the most useful central square, so that leaves b4. But, moving Nc2-b4 doesn't serve much purpose at this point; only after a2-a4 softens up the queen-side would Nc2-b4 possibly become useful. } )
+12...Ne7 { After Ne7 it appears Black might prefer ...Bc8-b7, as is played in many Sicilian Defense games, to cut through the center of the board and to aim at Pg2, where White's king might soon reside. } ( 12...Be6 )
+13. Nxe7 Qxe7
+14. O-O ( 14. exf5 { is consistent with the threat established by Bf1-d3, but it's unclear whether White can hold the pawn because of Black's mobile central pawns and generally good piece } 14...d5 ( 14...e4 $2 15. Bc2 Bxf5 $4 ( 15...O-O ) 16. Qd5 ) 15. Qh5 )
+14...O-O
+15. Nc2 { Seeing that the piece needed to be improved and that d5 would be a good spot for it, she moves it now. }
+15...f4 { It might be a little unusual to use this move when Bg7 blocks the g-file, but Kasparov has played the King's Indian Defense many times and understands how to handle the weak d5 and the open g-file. In this case he might not aim directly for an attack on Pg2 and Kg1. Instead he might just be preventing Ne3 or exf5, so he can return to ...Bc8-b7 with either ...f5 or ...d5 soon to follow. Kasparov is very much about achieving good overall piece activity. }
+16. a4 bxa4
+17. Rxa4 Qg5 { threatening ...Bh3 to checkmate with ...Qxg2# or to force g2-g3, so ...Bh3xf1 will win material and continue to weaken Kg1 } 18. f3 Bf6 19. Bc4 Kh8 { These moves are very much taken from a King's Indian Defense player's repertoire. } 20. Rf2 $2 ( 20. Qd2 Rg8 21. Rfa1 { coordinates the pieces a little better. Rf2 isn't good. } ) 20...Be7 21. Nb4 d5 $5 { Kasparov is always on the lookout for tactical shots which he can use to win or confuse the opponent. }
+22. Bxd5 Bc5 { offering Ra8 is just the sort of audacious thing Kasparov is noted for. But, don't think it's just a bluff. He's calculated variations to determine if his compensation is sufficient. }
+23. Bxa8 Rg8 24. Kf1 ( { I'm not quite sure what Kasparov had in mind after the obvious defensive move. } 24. Qf1 Bh3 25. Kh1 Bxf2 26. Qxf2 Bxg2+ 27. Kg1 Bh3+ 28. Kh1 Qd8 ( 28...Rxa8 29. Rxa6 Rd8 ( 29...Qd8 30. Rxa8 Qxa8 31. Qg1 f5 ) 30. Nd5 ) 29. Bd5 ) 24...Bxf2 25. Ke2 ( 25. Kxf2 Qxg2+ 26. Ke1 Qxb2 { and the threat of ...Rg1# is very strong } ) 25...Qxg2 26. Kd3 { Material is nominally equal, but the exposed Kd3 could be a problem. }
+26...Be3 27. Bd5 Qxh2 28. Kc4 Rg1
+29. Qd3 Bh3 { It's odd to see all these Black pieces cramped into the corner, but Black threatens ...Bf1 to win a queen! } 30. Kb3 Bf1 31. Qc2 Qxc2+ { It's a little surprising, after what had gone before, to see simplification; Black has a passed Ph7 and wants to advance it, so the h-file had to be cleared. } ( 31...Rg2 32. Qb1 Bb5 33. Ra5 { and White is somewhat coordinated and threatening Nxa6 to gain more space } )
+32. Kxc2 Kg7
+33. c4 Be2 { I suppose he's decided he can't just run Ph7 forward because Pc4 is also in good shape to advance and White's pieces might suddenly swarm Kg7. So, he has to continue the fight and await further simplifications when his king will be safer, then the pawns can advance. } 34. Rxa6 Bd1+ { prevents White's king from running to a2 (via b3) to get away from checks } ( 34...Rc1+ 35. Kb3 Bd1+ 36. Ka2 )
+35. Kd3 Bxf3
+36. Nc6 Rd1+
+37. Kc3 Bg4 { clearing the way for ...f4-f3 and perhaps teasing Polgar into Nxe5?? Maybe Black has a won position anyway. White's pawns can't advance yet and with Be3 preventing Ra6-a7 there's no attack on Kg7. This is the moment for pawn advances. }
+38. Nxe5 $4 Bd4+
+39. Kc2 Bxe5 $19
+40. Ra7 Re1
+41. Rxf7+ Kg6
+42. c5 Re2+
+43. Kc1 f3
+44. Bc4 ( 44. b4 Rxe4 )
+44...Rxe4
+45. Bd5 Rf4
+0-1
+

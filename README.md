@@ -1,9 +1,6 @@
 # Extended Game Description
-This gem implements "Extended Game Description", a new chess game description format.  
-It is based on FEN and Extended Position Description (EPD).  
-
-It provides robust conversion functionality, accepting a valid PGN string,
-and outputting a JSON string of the chess game in EGD representation.
+This gem implements conversion functionality between standart PGN and EGD (Extended Game Description).
+EGD is a new chess game description format that is based on FEN and Extended Position Description (EPD).  
 
 ## Installation
 
@@ -14,7 +11,8 @@ gem install 'egd'
 ## Use
 
 ```
-TODO
+require "egd"
+Egd.call(File.read("path/to/chess.pgn")) #=> JSON string
 ```
 
 ## What is this??
@@ -31,16 +29,19 @@ What we need for expedience is a way to de-"normalize" the data in PGN, to expan
 
 This is what EGD does. It is a denormalized way to represent a game of chess.
 
+Denormalize the PGNs of your games, store them in a PostgreSQL database and do powerful queries on the data, like [Extended Game Description Analysis](TODO) does.
+
 ### Position equality
-A consise way to represent any __diagram__ of a chess position is the [Forsyth–Edwards Notation (FEN)](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation). However, for our purposes it is not sufficient, as it does not contain some crucial meta-information on repetition count etc.
+Currently EDG satisfies itself with using [Forsyth–Edwards Notation (FEN)](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation) __diagrams__ as representations of position, since they encode the two curial pieces of information:
 
-Discussions of what a chess __position__ is, especially in a digital analysis setting, have yielded a conclusion that beyond the producing move and resulting piece placement, this information must be included:
+1. What pieces are on which squares,
+2. Castling rights of both players,
+2. En-passant capture square (irrespective of any legal possibility to execute such a capture).
 
-1. possible en-passant capture square (irrespective of any legal possibility to execute such a capture),
-2. TODO 3-repeat rule (possibility of draw)
-3. 50-move rule (forced draw)
-4. FIDE's 70-move rule (forced draw)
-5. ??
+However, a high-level competetive analysis may require the additional tracking of:
+1. Threefold repetition counter,
+3. Fifty-move rule counter,
+4. 75-move rule counter.
 
 ## EGD details
 

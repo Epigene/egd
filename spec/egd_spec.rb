@@ -18,17 +18,42 @@ RSpec.describe Egd do
       subject(:hash) { Egd::Builder.new(pgn).to_h }
 
       context "when initialized with the Readme 00 PGN" do
+        let(:pgn) { example_pgn("00") }
+
         it "returns the EGD hash representation of the game" do
-          expect(0).to(
+          expect(hash).to(
             eq(1)
           )
         end
       end
 
       context "when initialized with the 02 PGN, the real deal" do
+        let(:pgn) { example_pgn("02") }
+
         it "returns the EGD hash representation of the game" do
-          expect(0).to(
-            eq(1)
+          expect(hash).to match(
+            {
+              move: {
+                order: "1",
+                player: "w",
+                algeb: move,
+                meta: {
+                  from_square: "e4" # mandatory, TODO how to calculate this
+                  to_square: "e5" # mandatory
+                  piece: "p", # [K, Q, R, N, Bl, Bd, p], mandatory
+                  move_type: :move, # [:move. :capture, :en_passant_capture, :castle, :promotion], mandatory
+                  puts_opponent_in: [nil, :check, :checkmate] # optional if there is anything to display
+                  captured_piece: "Q", # [Q, R, N, Bl, Bd, p], # key is optional if not a capture, otherwise mandatory
+                  promotion: "Q" # key is optional if move is not a promotion. otherwise mandatory
+                }
+              },
+              position: {
+                "FEN" => Egd::FenBuilder.new(start_fen: @previous_fen, move: move).call,
+                meta: {
+                  "TODO" => true,
+                }
+              }
+            }
           )
         end
       end

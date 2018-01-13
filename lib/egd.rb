@@ -25,12 +25,15 @@ module Egd
 
       binding.pry
 
+      @to_h = {}
+      @to_h[:game_tags] = game_tags
+
       @to_h = moves.map do |move|
         puts "-> move '#{move}'"
         @previous_diad = {
           move: {
             order: "1",
-            player: "white",
+            player: "w",
             algeb: move,
             meta: moves_meta_tags(move, @previous_diad)
           },
@@ -54,7 +57,7 @@ module Egd
 
     private
       def game_tags
-        @game_tags ||= parsed_pgn[:game_tags]
+        @game_tags ||= parsed_pgn[:game_tags] || {}
       end
 
       def moves
@@ -72,8 +75,8 @@ module Egd
 
       def moves_meta_tags(move, previous_diad)
         {
-          piece_moved: "p", # [K, Q, R, N, Bl, Bd, p]
-          move_type: :move, # [:move. :capture, :castle]
+          piece: "p", # [K, Q, R, N, Bl, Bd, p]
+          move_type: :move, # [:move. :capture, :castle, :promotion]
           captured_piece: "Q", # [Q, R, N, Bl, Bd, p]
           check: true, # false
           promotion: "Q"

@@ -16,7 +16,7 @@ gem install 'egd'
 
 ```
 require "egd"
-Egd.new(File.read("path/to/chess.pgn")).to_json #=> JSON string
+Egd::Builder.new(File.read("path/to/chess.pgn")).to_json #=> JSON string
 ```
 
 ## What is this??
@@ -33,10 +33,15 @@ What we need for expedience is a way to de-"normalize" the data in PGN, to expan
 
 This is what EGD does. It is a denormalized way to represent a game of chess.
 
-Denormalize the PGNs of your games, store them in a PostgreSQL database and do powerful queries on the data, like [Extended Game Description Analysis](TODO) does.
+Please note that currently EGD supports regular chess only and assumes the standart starting position.  
+This allows the output to be in the format of [move + outcome_position],
+rather than [position1 + move + outcome_position]
+
+Denormalize the PGNs of your games, store them in a PostgreSQL database and do powerful queries on the data,
+like [Chess Sense](https://github.com/Epigene/chess_sense) does.
 
 ### Position equality
-Currently EDG satisfies itself with using [Forsyth–Edwards Notation (FEN)](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation) __diagrams__ as representations of position, since they encode the three crucial pieces of information:
+Currently EGD satisfies itself with using [Forsyth–Edwards Notation (FEN)](https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation) __diagrams__ as representations of position, since they encode the three crucial pieces of information:
 
 1. What pieces are on which squares,
 2. Castling rights of both players,
@@ -49,14 +54,15 @@ However, a high-level competetive analysis may require the additional tracking o
 
 ## EGD details
 
-EGD is based on [Extended Position Description (EPD)](https://chessprogramming.wikispaces.com/Extended+Position+Description)
-but adds meta-information to moves as well.  
+EGD is inspired by [Extended Position Description (EPD)](https://chessprogramming.wikispaces.com/Extended+Position+Description)
+but goes further than just tracking positions and adds meta-information to moves as well.  
 
-A (very short) game that can be represented in algebraic notation as 1. e4 e5 *
-in EGD becomes a JSON hash of number keys for moves and has values with "move" and "position" keys.
+A (very short) game that can be represented in algebraic notation as `1. e4 e5`
+in EGD becomes a (JSON) hash of number keys for moves and has values with "move" and "position" keys.
 
 ```
 egd = Egd::Builder.new("1. e4 e5").to_json
+
 egd.to_h #=>
 TODO
 
@@ -67,6 +73,30 @@ TODO
 
 Take a look at `spec/egd_spec.rb` `"when initialized with the 02 PGN, the real deal"`
 test for the structure you get when parsing PGNs you might get from chess.com.  
+
+### Move :meta tags
+Besides which piece moved (from where) to where, there is a huge variety of meta-information
+
+Currently supported keys are:
+```rb
+meta: {
+  from_square: "e4" # mandatory, TODO how to calculate this
+  to_square: "e5" # mandatory
+  piece: "p", # [K, Q, R, N, Bl, Bd, p], mandatory
+  move_type: :move, # [:move. :capture, :en_passant_capture, :castle, :promotion], mandatory
+  puts_opponent_in: [nil, :check, :checkmate] # optional if there is anything to display
+  captured_piece: "Q", # [Q, R, N, Bl, Bd, p], # key is optional if not a capture, otherwise mandatory
+  promotion: "Q" # key is optional if move is not a promotion. otherwise mandatory
+
+  # proposed
+  # double_attack: true, # TODO, by which piece(s) on which pieces
+  # discovered_attack: true # TODO, by which piece(s) on which pieces
+  # discovered_check: true # TODO, by which piece(s)
+}
+```
+
+## Future Ideas
+1. Expose the move's :meta key to [annotations](https://en.wikipedia.org/wiki/Chess_annotation_symbols) like "!!", "+/-", and "$1"
 
 ## Development
 

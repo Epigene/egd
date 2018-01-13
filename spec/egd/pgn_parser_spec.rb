@@ -47,6 +47,8 @@ RSpec.describe Egd::PgnParser do
             {:num=>1, :w=>"e4", :b=>"c5"},
             {:num=>2, :w=>"Nf3", :b=>"Nc6"},
             # ...
+            {:num=>38, :w=>"Nxe5", :b=>"Bd4+"},
+            #...
             {:num=>44, :w=>"Bc4", :b=>"Rxe4"},
             {:num=>45, :w=>"Bd5", :b=>"Rf4"}
           )
@@ -92,5 +94,43 @@ RSpec.describe Egd::PgnParser do
       end
     end
 
+    context "when called with the 06 pgn" do
+      let(:pgn) { example_pgn("06") }
+
+      it "parses a PGN with all manner of annotations, stripping themm off correctly" do
+        expect(subject).to match({
+          moves: [
+            {:num=>1, :w=>"d4", :b=>"d5"}
+            {:num=>2, :w=>"g4"}
+          ]
+        })
+      end
+    end
+
+    context "when called with the 07 pgn" do
+      let(:pgn) { example_pgn("07") }
+
+      it "parses a PGN with castling and promotion correctly" do
+        expect(subject).to match({
+          moves: array_including(
+            {:num=>4, :w=>"O-O", b: "axb2"},
+            {:num=>5, :w=>"Qe2", b: "bxa1=Q"}
+          )
+        })
+      end
+    end
+
+    context "when called with the 08 pgn" do
+      let(:pgn) { example_pgn("08") }
+
+      it "parses a PGN with play time comments from Chess.com" do
+        expect(subject).to match({
+          moves: array_including(
+            {:num=>64, :w=>"Qaa4+", b: "Kc3"},
+            {:num=>5, :w=>"Qgd4#"}
+          )
+        })
+      end
+    end
   end
 end

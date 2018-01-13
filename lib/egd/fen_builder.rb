@@ -5,7 +5,7 @@ class Egd::FenBuilder
 
   attr_reader :start_fen, :move
 
-  NULL_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+  NULL_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".freeze
 
   # Egd::FenBuilder.new(start_fen: nil, move:).call
   def initialize(start_fen: nil, move:)
@@ -14,7 +14,6 @@ class Egd::FenBuilder
   end
 
   def call
-    binding.pry
     @fen ||= PGN::FEN.new(start_fen).to_position.move(move).to_fen.to_s
   end
 end

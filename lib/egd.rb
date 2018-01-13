@@ -11,14 +11,21 @@ module Egd
   end
 
   class Builder
+    # This is the real deal
+    # Takes in a PGN string and returns a Ruby or JSON hash representation of the game in EGD
+
     attr_reader :pgn
 
     def initialize(pgn)
       @pgn = pgn
     end
 
-    def to_json
-      moves.map do |move|
+    def to_h
+      return @to_h if defined?(@to_h)
+
+      binding.pry
+
+      @to_h = moves.map do |move|
         puts "-> move '#{move}'"
         @previous_diad = {
           move: {
@@ -39,6 +46,10 @@ module Egd
 
         @previous_diad
       end
+    end
+
+    def to_json
+      to_h.to_json
     end
 
     private

@@ -1,10 +1,8 @@
 require "bundler/setup"
 
-require 'simplecov'
-SimpleCov.start
+require "cov_helper"
 
 require "egd"
-
 require "pry"
 
 Dir[Egd.root + "spec/support/*.rb"].each { |file| require file }

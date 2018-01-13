@@ -59,7 +59,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler (~> 1.16)
-  coveralls
+  coveralls (~> 0.7.2)
   egd!
   pry (~> 0.11.2)
   rake (~> 10.0)

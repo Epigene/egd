@@ -1,6 +1,9 @@
 # Thanks to https://github.com/jedld/pgn_parser
 
 class Egd::PgnParser
+  # This service takes in a PGN string and parses it
+  # Returns the game tags (headers of the PGN file) and the actual moves made
+
   attr_reader :headers, :pgn_content
 
   def initialize(pgn_content)
@@ -15,6 +18,7 @@ class Egd::PgnParser
     current_index = 0
     state = :initial
     buffer = ''
+
     while (current_index < @pgn_content.size)
       current_char = @pgn_content[current_index]
       current_index += 1
@@ -29,7 +33,7 @@ class Egd::PgnParser
         end
       end
 
-      if state==:start_parse_header
+      if state == :start_parse_header
         if current_char == ']'
           state = :initial
           hd = parse_header(buffer)
@@ -93,9 +97,11 @@ class Egd::PgnParser
   end
 
   def simple_parse_moves
-    move_line = pgn_content.split("\n").map do |line|
-      line unless line.strip[0] == "["
-    end.compact.join(" ")
+    move_line =
+      pgn_content.split("\n").map do |line|
+        line unless line.strip[0] == "["
+      end.compact.join(" ").
+      gsub(%r'((1\-0)|(0\-1)|(1/2\-1/2)|(\*))\s*\z', "") # cut away game termination
 
     # strip out comments and alternatives
     while move_line.gsub!(%r'\{[^{}]*\}', ""); end
@@ -106,15 +112,17 @@ class Egd::PgnParser
     moves = []
 
     while move_line.match(%r'\d+\.')
-      move_line[%r'\A(\d+)\.(.*?)((\d+\..*\z)|\z)']
+      parsed_moves = move_line.match(%r'\A
+        (?<move_number>\d+)\.(?<move_chunk>.*?)(?:(?<remainder>\d+\..*\z)|\z)
+      'x)
 
-      move_number = $1
-      move_chunk = $2 #=> " e4 c5 "
-      move_line = $4.to_s.strip
+      move_number = parsed_moves[:move_number]
+      move_chunk = parsed_moves[:move_chunk] #=> " e4 c5 "
+      move_line = parsed_moves[:remainder].to_s.strip
 
       next if !move_chunk
 
-      move_chunk = move_chunk.to_s.gsub(%r'\.{2}\s?', ".. " )
+      move_chunk = move_chunk.to_s.gsub(%r'\.{2}\s?', ".. ") # formats Black move ".."
       move_line = move_line.to_s.strip
 
       number_var = "@_#{move_number}"

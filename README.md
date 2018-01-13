@@ -16,7 +16,7 @@ gem install 'egd'
 
 ```
 require "egd"
-Egd.call(File.read("path/to/chess.pgn")) #=> JSON string
+Egd.new(File.read("path/to/chess.pgn")).to_json #=> JSON string
 ```
 
 ## What is this??
@@ -52,12 +52,21 @@ However, a high-level competetive analysis may require the additional tracking o
 EGD is based on [Extended Position Description (EPD)](https://chessprogramming.wikispaces.com/Extended+Position+Description)
 but adds meta-information to moves as well.  
 
-A (very short) game that can be represented in algebraic notation as 1. e4 e5
+A (very short) game that can be represented in algebraic notation as 1. e4 e5 *
 in EGD becomes a JSON hash of number keys for moves and has values with "move" and "position" keys.
 
 ```
+egd = Egd::Builder.new("1. e4 e5").to_json
+egd.to_h #=>
+TODO
+
+egd.to_json
+#=>
 TODO
 ```
+
+Take a look at `spec/egd_spec.rb` `"when initialized with the 02 PGN, the real deal"`
+test for the structure you get when parsing PGNs you might get from chess.com.  
 
 ## Development
 

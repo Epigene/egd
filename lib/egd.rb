@@ -2,6 +2,7 @@ require "digest"
 require "pgn"
 
 require "egd/fen_builder"
+require "egd/fen_difference_discerner"
 require "egd/pgn_parser"
 require "egd/version"
 
@@ -23,31 +24,39 @@ module Egd
     def to_h
       return @to_h if defined?(@to_h)
 
-      binding.pry
-
       @to_h = {}
-      @to_h[:game_tags] = game_tags
+      @to_h["game_tags"] = game_tags
 
-      @to_h = moves.map do |move|
-        puts "-> move '#{move}'"
-        @previous_diad = {
-          move: {
-            order: "1",
-            player: "w",
-            algeb: move,
-            meta: moves_meta_tags(move, @previous_diad)
+      @previous_fen = Egd::FenBuilder::NULL_FEN
+
+      moves.each_with_object(@to_h) do |move, mem|
+        transition_key = "#{move[%r'\A\d+']}#{move.match?(%r'\.\.') ? "b" : "w"}" #=> "1w"
+
+        puts "-> move '#{move}'" # DEBUG
+
+        end_fen = Egd::FenBuilder.new(start_fen: @previous_fen, move: move).call
+
+        current_transition = {
+          "start_position" => {
+            "fen" => @previous_fen,
+            "features" => "TODO",
           },
-          position: {
-            "FEN" => Egd::FenBuilder.new(start_fen: @previous_fen, move: move).call,
-            meta: {
-              "TODO" => true,
-            }
+          "move" => {
+            "player" => transition_key[%r'\D\z'], #=> "w"
+            "san" => move.match(%r'\A(?:\d+\.(?:\s*\.\.)?\s+)(?<san>\S+)\z')[:san], #=> "e4"
+          }.merge(
+            Egd::FenDifferenceDiscerner.new(start_fen: @previous_fen, end_fen: end_fen).call
+          ),
+          "end_position" => {
+            "fen" => end_fen,
+            "features" => "TODO"
           }
         }
 
-        @previous_fen = @previous_diad.dig(:position, "FEN")
+        # leave this breadcrumb for next run through loop
+        @previous_fen = current_transition.dig("end_position", "fen")
 
-        @previous_diad
+        mem[transition_key] = current_transition
       end
     end
 

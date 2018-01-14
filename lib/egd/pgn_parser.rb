@@ -2,7 +2,8 @@
 
 class Egd::PgnParser
   # This service takes in a PGN string and parses it
-  # Returns the game tags (headers of the PGN file) and the actual moves made
+  # Returns the game tags (headers of the PGN file) and
+  # the *actual* moves made in SAN
 
   attr_reader :headers, :pgn_content
 
@@ -63,36 +64,38 @@ class Egd::PgnParser
     state = :parse_type
     current_index = 0
     buffer = ''
+
     while (current_index < header.size)
       current_char = header[current_index]
-      current_index+=1
-      if state==:parse_type
+      current_index += 1
+
+      if state == :parse_type
         if current_char == ' '
           event_type = buffer.dup
           buffer = ''
-          state=:start_parse_value
+          state = :start_parse_value
           next
         else
           buffer << current_char
           next
         end
-      elsif state==:start_parse_value
+      elsif state == :start_parse_value
         if current_char=='"'
           state=:parse_value
           next
         else
           next
         end
-      elsif state==:parse_value
+      elsif state == :parse_value
         if current_char=='"'
           event_value = buffer.dup
           buffer = ''
         else
           buffer << current_char
         end
-
       end
     end
+
     {type: event_type, value: event_value}
   end
 

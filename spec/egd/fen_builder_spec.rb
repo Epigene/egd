@@ -3,13 +3,21 @@ RSpec.describe Egd::FenBuilder do
   describe "#call(start_fen: nil, move:)" do
     subject { described_class.new(**args).call }
 
-    context "when initialized without starting fen" do
+    context "when initialized without a starting fen" do
       let(:args) { {move: "a3"} }
 
       it "assumes its the first move from a standart chess starting position" do
         expect(subject).to(
           eq("rnbqkbnr/pppppppp/8/8/8/P7/1PPPPPPP/RNBQKBNR b KQkq - 0 1")
         )
+      end
+    end
+
+    context "when initialized without a move" do
+      let(:args) { {} }
+
+      it "returns the unchanged fen it was initialized with" do
+        expect(subject).to eq(described_class::NULL_FEN)
       end
     end
 

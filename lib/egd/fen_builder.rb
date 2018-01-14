@@ -8,12 +8,16 @@ class Egd::FenBuilder
   NULL_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".freeze
 
   # Egd::FenBuilder.new(start_fen: nil, move:).call
-  def initialize(start_fen: nil, move:)
+  def initialize(start_fen: nil, move: nil)
     @start_fen = start_fen || NULL_FEN
-    @move = move.gsub(%r'\A\d+\.\s*\.*\s*', "")
+    @move = move.to_s.gsub(%r'\A\d+\.\s*\.*\s*', "")
   end
 
   def call
-    @fen ||= PGN::FEN.new(start_fen).to_position.move(move).to_fen.to_s
+    @fen ||= (
+      move != "" ?
+        PGN::FEN.new(start_fen).to_position.move(move).to_fen.to_s :
+        @start_fen
+    )
   end
 end

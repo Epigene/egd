@@ -32,28 +32,54 @@ RSpec.describe Egd do
 
         it "returns the EGD hash representation of the game" do
           expect(hash).to match(
-            {
-              move: {
-                order: "1",
-                player: "w",
-                algeb: move,
-                meta: {
-                  from_square: "e4" # mandatory, TODO how to calculate this
-                  to_square: "e5" # mandatory
-                  piece: "p", # [K, Q, R, N, Bl, Bd, p], mandatory
-                  move_type: :move, # [:move. :capture, :en_passant_capture, :castle, :promotion], mandatory
-                  puts_opponent_in: [nil, :check, :checkmate] # optional if there is anything to display
-                  captured_piece: "Q", # [Q, R, N, Bl, Bd, p], # key is optional if not a capture, otherwise mandatory
-                  promotion: "Q" # key is optional if move is not a promotion. otherwise mandatory
+          )
+        end
+      end
+
+      context "when initialized with the 09 PGN with en-passant capture" do
+        let(:pgn) { example_pgn("09") }
+
+        it "returns the EGD hash representation with correct move LRANs and FENs" do
+          expect(hash).to match(
+            hash_including(
+              "2b" => {
+                "start_position" => {
+                  fen: anything,
+                  features: anything
+                },
+                "move" => {
+                  "san" => "d5",
+                  "lran" => "d7-d5",
+                  "from_square" => "d7",
+                  "to_square" => "d5",
+                  "piece" => "p",
+                  "move_type" => "move"
+                },
+                "end_position" => {
+                  fen: "rnbqkbnr/1pp1pppp/p7/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3",
+                  features: anything
                 }
               },
-              position: {
-                "FEN" => Egd::FenBuilder.new(start_fen: @previous_fen, move: move).call,
-                meta: {
-                  "TODO" => true,
+              "3w" => {
+                "start_position" => {
+                  fen: "rnbqkbnr/1pp1pppp/p7/3pP3/8/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 3",
+                  features: anything
+                },
+                "move" => {
+                  "san" => "exd6",
+                  "lran" => "e5xd6",
+                  "from_square" => "e5",
+                  "to_square" => "d6",
+                  "piece" => "p",
+                  "move_type" => "ep_capture",
+                  "captured_piece" => "p"
+                },
+                "end_position" => {
+                  fen: "rnbqkbnr/1pp1pppp/p2P4/8/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 3",
+                  features: anything
                 }
               }
-            }
+            )
           )
         end
       end

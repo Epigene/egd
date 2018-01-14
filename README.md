@@ -55,7 +55,7 @@ However, a high-level competetive analysis may require the additional tracking o
 ## EGD details
 
 EGD is inspired by [Extended Position Description (EPD)](https://chessprogramming.wikispaces.com/Extended+Position+Description)
-but goes further than just tracking positions and adds meta-information to moves as well.  
+but goes further than just tracking positions and adds meta-information to moves as well, specifically, it uses a combination of Long algebraic and Reversible algebraic [chess notations](https://en.wikipedia.org/wiki/Chess_notation) to specify, without ambiguity, what was moved to where and what capture or promotion took place.  
 
 A (very short) game that can be represented in algebraic notation as `1. e4 e5`
 in EGD becomes a (JSON) hash of number keys for moves and has values with "move" and "position" keys.
@@ -84,7 +84,7 @@ meta: {
   to_square: "e5" # mandatory
   piece: "p", # [K, Q, R, N, Bl, Bd, p], mandatory
   move_type: :move, # [:move. :capture, :en_passant_capture, :castle, :promotion], mandatory
-  puts_opponent_in: [nil, :check, :checkmate] # optional if there is anything to display
+  # puts_opponent_in: [nil, :check, :checkmate] # optional if there is anything to display
   captured_piece: "Q", # [Q, R, N, Bl, Bd, p], # key is optional if not a capture, otherwise mandatory
   promotion: "Q" # key is optional if move is not a promotion. otherwise mandatory
 

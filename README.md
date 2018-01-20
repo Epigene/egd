@@ -91,6 +91,11 @@ Currently outputted keys are:
 Please note that, unlike PGN representation, EGD does not treat check(+) and checkmate(#)
 as part of a move, instead, they are treated as part of a position.
 
+### Position features
+Currently positions are very minimalist - a FEN string and a "features" hash that currently can only have two keys - "check" and "checkmate".
+
+Please note that since the treatment of checkmate event is not uniform across online PGN generators (Lichess represents checkmate as "+", whereas chess.com as "#"), a checkmate event denoted by "#" also adds the "check" => true feature tag.
+
 ## Future Ideas
 1. Expose the move's :meta key to [annotations](https://en.wikipedia.org/wiki/Chess_annotation_symbols) like "!!", "+/-", and "$1"
 

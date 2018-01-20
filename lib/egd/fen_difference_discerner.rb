@@ -1,7 +1,7 @@
 class Egd::FenDifferenceDiscerner
   # This service takes in a start and an end FEN string,
-  # and the move algebraic representation,
-  # and a tells you what kind of move occured, in more detail then SAN
+  # and the move in SAN,
+  # and a tells you what kind of move occured, in more detail than SAN
 
   # Theoretically a start and end fen would suffice, but having move in SAN,
   # which we do, allows skipping some hard procesing parts.
@@ -33,7 +33,7 @@ class Egd::FenDifferenceDiscerner
       "from_square" => from_square, # FEN # b2
       "to_square" => to_square, # move b3
       "piece" => piece, # move p
-      "move_type" => move_type, # FEN [:move. :capture, :promotion],
+      "move_type" => move_type,
     }
 
     changes.merge!("captured_piece" => captured_piece) if captured_piece

@@ -5,6 +5,7 @@ require "egd/procedures"
 require "egd/fen_builder"
 require "egd/fen_to_board"
 require "egd/fen_difference_discerner"
+require "egd/position_feature_discerner"
 require "egd/pgn_parser"
 require "egd/version"
 
@@ -40,24 +41,34 @@ module Egd
 
         puts "-> move '#{move}'" # DEBUG
 
+        san = move.match(%r'\A(?:\d+\.(?:\s*\.\.)?\s+)(?<san>\S+)\z')[:san] #=> "e4"
+        puts san # DEBUG
         end_fen = Egd::FenBuilder.new(start_fen: @previous_fen, move: move).call
+
+        # binding.pry
 
         current_transition = {
           "start_position" => {
             "fen" => @previous_fen,
-            "features" => "TODO",
+            "features" => {}, # TODO, no features can be discerned before the move yet
           },
           "move" => {
             "player" => transition_key[%r'\D\z'], #=> "w"
-            "san" => move.match(%r'\A(?:\d+\.(?:\s*\.\.)?\s+)(?<san>\S+)\z')[:san], #=> "e4"
+            "san" => san,
           }.merge(
-            Egd::FenDifferenceDiscerner.new(start_fen: @previous_fen, end_fen: end_fen).call
+            Egd::FenDifferenceDiscerner.new(
+              start_fen: @previous_fen, move: san, end_fen: end_fen
+            ).call
           ),
           "end_position" => {
             "fen" => end_fen,
-            "features" => "TODO"
+            "features" => Egd::PositionFeatureDiscerner.new(
+              move: move, end_fen: end_fen
+            ).call
           }
         }
+
+        puts san # DEBUG
 
         # leave this breadcrumb for next run through loop
         @previous_fen = current_transition.dig("end_position", "fen")
@@ -86,16 +97,6 @@ module Egd
         end
 
         @moves
-      end
-
-      def moves_meta_tags(move, previous_diad)
-        {
-          piece: "p", # [K, Q, R, N, Bl, Bd, p]
-          move_type: :move, # [:move. :capture, :castle, :promotion]
-          captured_piece: "Q", # [Q, R, N, Bl, Bd, p]
-          check: true, # false
-          promotion: "Q"
-        }
       end
 
       def parsed_pgn

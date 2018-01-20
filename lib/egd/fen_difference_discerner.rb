@@ -1,6 +1,10 @@
 class Egd::FenDifferenceDiscerner
   # This service takes in a start and an end FEN string,
-  # and a tells you what kind of move occured
+  # and the move algebraic representation,
+  # and a tells you what kind of move occured, in more detail then SAN
+
+  # Theoretically a start and end fen would suffice, but having move in SAN,
+  # which we do, allows skipping some hard procesing parts.
 
   attr_reader :start_fen, :move, :end_fen
 
@@ -12,88 +16,45 @@ class Egd::FenDifferenceDiscerner
   end
 
   def call
+    # quickreturn with possible special cases
     case move
     when "O-O"
-      return special_case_short_castle(parse_fen(start_fen)[:to_move])
+      return special_case_short_castle(Egd::Procedures.parse_fen(start_fen)[:to_move])
     when "O-O-O"
-      return special_case_long_castle(parse_fen(start_fen)[:to_move])
+      return special_case_long_castle(Egd::Procedures.parse_fen(start_fen)[:to_move])
     when %r'\A[a-h]x[a-h]\d' # pawn x pawn, possible en-passant
       return special_case_ep_capture if special_case_ep_capture
     end
 
-    fen1 = parse_fen(start_fen)
-    fen2 = parse_fen(end_fen)
+    # entering long processing of regular moves
 
-    squares = changed_squares(fen1[:board], fen2[:board])
-
-    binding.pry
-
-    {
-      "lran" => "TODO", # FEN
-      "from_square" => "TODO", # FEN
-      "to_square" => "TODO", # move
-      "piece" => "TODO", # move
-      "move_type" => "TODO", # FEN
-
-      # optionals
-      "captured_piece" => "p", # move
-      "promotion" => "Q", # move
+    changes = {
+      "lran" => lran, # FEN
+      "from_square" => from_square, # FEN # b2
+      "to_square" => to_square, # move b3
+      "piece" => piece, # move p
+      "move_type" => move_type, # FEN [:move. :capture, :promotion],
     }
+
+    changes.merge!("captured_piece" => captured_piece) if captured_piece
+    changes.merge!("promotion" => promotion) if promotion
+
+    changes
   end
 
   private
-    def parse_fen(fen)
-      match = fen.split(%r'\s+')
-
-      {
-        board: match[0],
-        to_move: match[1],
-        castling: match[2],
-        ep_square: match[3],
-        halfmove: match[4],
-        fullmove: match[5]
-      }
-    end
-
-    def changed_squares(board1, board2)
-      expanded_board2 = expand_board(board2)
-
-      moved_from = ""
-      moved_to = ""
-
-      expand_board(board1).split("").each.with_index(0) do |letter, i|
-        moved_from +=
-          if letter == expanded_board2[i] && letter != "/"
-            "-"
-          else
-            letter
-          end
-      end
-
-      binding.pry
-
-      moved_from
-    end
-
-    def expand_board(board)
-      # this replaces numbers with corresponding amount of dashes
-      board.gsub(%r'\d') do |match|
-        "-" * match.to_i
-      end
-    end
 
     def special_case_ep_capture
       return @ep_capture if defined?(@ep_capture)
 
-      return @ep_capture = false if parse_fen(start_fen)[:ep_square] != move[-2..-1]
+      return @ep_capture = false if Egd::Procedures.parse_fen(start_fen)[:ep_square] != to_square
 
       from = move[0] + (move[-1] == "6" ? "5" : "4")
-      to = move[-2..-1]
 
       @ep_capture = {
-        "lran" => "#{from}x#{to}", # FEN
+        "lran" => "#{from}x#{to_square}", # FEN
         "from_square" => from, # FEN
-        "to_square" => to, # move
+        "to_square" => to_square, # move
         "piece" => "p", # move
         "move_type" => "ep_capture", # FEN
         "captured_piece" => "p", # move
@@ -119,4 +80,125 @@ class Egd::FenDifferenceDiscerner
         "move_type" => "long_castle", # FEN
       }
     end
+
+    def board1
+      @board1 ||= Egd::FenToBoard.new(start_fen)
+    end
+
+    def board2
+      @board2 ||= Egd::FenToBoard.new(end_fen)
+    end
+
+    def changed_squares
+      return @changed_squares if defined?(@changed_squares)
+
+      @changed_squares = []
+
+      (1..64).to_a.each do |fen_index|
+        i = fen_index - 1
+
+        if board1.boardline[i] != board2.boardline[i]
+          square = Egd::Procedures.fen_index_to_square(fen_index)
+
+          @changed_squares << {
+            square: square, from: board1.boardline[i], to: board2.boardline[i]
+          }
+        end
+      end
+
+      @changed_squares
+    end
+
+    def from_square
+      @from_square ||= changed_squares.reject do |hash|
+        hash[:square] == to_square
+      end.detect do |hash|
+        hash[:to] == "-"
+      end[:square]
+    end
+
+    def to_square
+      @to_square ||= move.match(%r'\A(?<basemove>.*\d)(?<drek>.*)?\z')[:basemove][-2..-1]
+    end
+
+    def piece
+      return @piece if defined?(@piece)
+
+      possible_piece = move[0]
+
+      @piece = (Egd::SAN_CHESS_PIECES.include?(possible_piece) ? possible_piece : "p" )
+
+      @piece << bishop_color(to_square) if @piece == "B"
+
+      @piece
+    end
+
+    def move_type
+      @move_type ||=
+        case move
+        when %r'x.*='i
+          "promotion_capture"
+        when %r'x'i
+          "capture"
+        when %r'='i
+          "promotion"
+        else
+          "move"
+        end
+    end
+
+    def captured_piece
+      @captured_piece ||=
+        if move_type[%r'capture']
+          captured_piece = changed_squares.detect do |hash|
+            hash[:square] == to_square
+          end[:from].upcase
+
+          captured_piece.downcase! if captured_piece[%r'p'i]
+
+          captured_piece << bishop_color(to_square) if captured_piece == "B"
+
+          captured_piece
+        else
+          nil
+        end
+    end
+
+    def promotion
+      @promotion ||=
+        if move_type[%r'promotion']
+          promoted_to = move.match(%r'=(?<promo>.)\z')[:promo]
+
+          promoted_to << bishop_color(to_square) if promoted_to == "B"
+
+          promoted_to
+        else
+          nil
+        end
+    end
+
+    def lran
+      return @lran if defined?(@lran)
+
+      @lran = "#{piece_in_lran(piece)}#{from_square}"
+
+      @lran << (
+        captured_piece ?
+          "x#{piece_in_lran(captured_piece)}#{to_square}" :
+          "-#{to_square}"
+      )
+
+      @lran << "=#{promotion[0]}" if promotion
+
+      @lran
+    end
+
+    def piece_in_lran(pc)
+      pc == "p" ? "" : pc[0]
+    end
+
+    def bishop_color(on_square)
+      Egd::Procedures.square_color(on_square) == "w" ? "l" : "d"
+    end
+
 end

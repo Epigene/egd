@@ -192,17 +192,18 @@ RSpec.describe Egd::FenDifferenceDiscerner do
 
     context "when fen difference is produced by a a7xb8=B promotion" do
       let(:fen1) { "1q3rk1/P1pbb2p/2n1pnp1/3p4/3P1B2/2NQPN2/P1P1BPP1/R3K2R w KQ - 1 15" }
-      let(:move) { "axb8=Q" }
+      let(:move) { "axb8=B" }
       let(:fen2) { "1B3rk1/2pbb2p/2n1pnp1/3p4/3P1B2/2NQPN2/P1P1BPP1/R3K2R b KQ - 0 15" }
 
       it "returns a hash of the difference / move" do
         expect(the_difference).to eq(
           {
-            "lran" => "a7xb8=B",
+            "lran" => "a7xQb8=B",
             "from_square" => "a7",
             "to_square" => "b8",
             "piece" => "p",
-            "move_type" => "promotion",
+            "move_type" => "promotion_capture",
+            "captured_piece" => "Q",
             "promotion" => "Bd",
           }
         )

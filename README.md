@@ -54,24 +54,96 @@ However, a high-level competetive analysis may require the additional tracking o
 EGD is inspired by [Extended Position Description (EPD)](https://chessprogramming.wikispaces.com/Extended+Position+Description)
 but goes further than just tracking positions and adds meta-information to moves as well, specifically, it uses a combination of Long algebraic and Reversible algebraic [chess notations](https://en.wikipedia.org/wiki/Chess_notation) to specify, without ambiguity, what was moved to where and what capture or promotion took place.  
 
-A (very short) game that can be represented in algebraic notation as `1. e4 e5`
-in EGD becomes a (JSON) hash of number keys for moves and TODO.
+The general form of EGD is a (JSON) hash of game headers and moves:
 
+```rb
+some_egd.to_h =>
+
+{
+  # PGN game headers, in the future may contain additional meta-information
+  # about the game as a whole
+  "game_tags" => { 
+    "Event"=>"Eurotel Trophy",
+    "Key" => "value"
+  },
+
+  # the moveset, each move is identified by order number and which side is moving
+  "moves" => {
+    # 1st move, by white
+    "1w"=>{ 
+      # what was the starting position
+      "start_position"=>{
+        # FEN diagram of the starting position
+        "fen"=>"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+        # details about the position, see "Position features" chapter
+        "features"=>{}
+      },
+      # details about the move
+      "move"=>{
+        "player"=>"w", "san"=>"e4", "lran"=>"e2-e4", "from_square"=>"e2",
+        "to_square"=>"e4", "piece"=>"p", "move_type"=>"move"
+      },
+      # what was the resulting position
+      "end_position"=>{
+        # FEN diagram of the resulting position
+        "fen"=>"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
+        "features"=>{}
+      }
+    }
+  }
+}
 ```
+
+A (very short) game that can be represented in algebraic notation as `1. e4 e5`
+
+
+```rb
 egd = Egd::Builder.new("1. e4 e5").to_json
 
 egd.to_h #=>
-TODO
+# {
+#   "game_tags" => {},
+#   "moves" => {
+#     "1w"=>{
+#       "start_position"=>{
+#         "fen"=>"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+#         "features"=>{}
+#       },
+#       "move"=>{
+#         "player"=>"w", "san"=>"e4", "lran"=>"e2-e4", "from_square"=>"e2",
+#         "to_square"=>"e4", "piece"=>"p", "move_type"=>"move"
+#       },
+#       "end_position"=>{
+#         "fen"=>"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
+#         "features"=>{}
+#       }
+#     },
+#     "1b"=>{
+#       "start_position"=>{
+#         "fen"=>"rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
+#         "features"=>{}
+#       },
+#       "move"=>{
+#         "player"=>"b", "san"=>"e5", "lran"=>"e7-e5",
+#         "from_square"=>"e7", "to_square"=>"e5", "piece"=>"p",
+#         "move_type"=>"move"
+#       },
+#       "end_position"=>{
+#         "fen"=>"rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+#         "features"=>{}
+#       }
+#     }
+#   }
+# }
 
 egd.to_json
-#=>
-TODO
+#=> "{\"game_tags\":{},\"moves\":{\"1w\":{\"start_position\": ... \"features\":{}}}}}"
 ```
 
-Take a look at `spec/egd_spec.rb` `"when initialized with the 02 PGN, the real deal"`
+Take a look at `spec/egd_spec.rb` `"when initialized with the 02 PGN, a real immortal game"`
 test for the structure you get when parsing PGNs you might get from chess.com.  
 
-### Move tags
+### Move specifics
 EGD tries to provide the maximum of meta-information about a move a programmed system can.
 
 Currently outputted keys are:
@@ -91,10 +163,22 @@ Currently outputted keys are:
 Please note that, unlike PGN representation, EGD does not treat check(+) and checkmate(#)
 as part of a move, instead, they are treated as part of a position.
 
-### Position features
+### Position specifics
 Currently positions are very minimalist - a FEN string and a "features" hash that currently can only have two keys - "check" and "checkmate".
 
 Please note that since the treatment of checkmate event is not uniform across online PGN generators (Lichess represents checkmate as "+", whereas chess.com as "#"), a checkmate event denoted by "#" also adds the "check" => true feature tag.
+
+Example position hash:
+
+```rb
+"end_position"=>{
+  "fen"=>"rnbqkbnr/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/RNBQKBNR w KQkq e6 0 2",
+  "features"=>{
+    "check" => true,
+    "checkmate" => true
+  }
+}
+```
 
 ## Future Ideas
 1. Expose the move's :meta key to [annotations](https://en.wikipedia.org/wiki/Chess_annotation_symbols) like "!!", "+/-", and "$1"

@@ -33,19 +33,15 @@ module Egd
 
       @to_h = {}
       @to_h["game_tags"] = game_tags
+      @to_h["moves"] = {}
 
       @previous_fen = Egd::FenBuilder::NULL_FEN
 
       moves.each_with_object(@to_h) do |move, mem|
         transition_key = "#{move[%r'\A\d+']}#{move.match?(%r'\.\.') ? "b" : "w"}" #=> "1w"
 
-        puts "-> move '#{move}'" # DEBUG
-
         san = move.match(%r'\A(?:\d+\.(?:\s*\.\.)?\s+)(?<san>\S+)\z')[:san] #=> "e4"
-        puts san # DEBUG
         end_fen = Egd::FenBuilder.new(start_fen: @previous_fen, move: move).call
-
-        # binding.pry
 
         current_transition = {
           "start_position" => {
@@ -68,17 +64,15 @@ module Egd
           }
         }
 
-        puts san # DEBUG
-
         # leave this breadcrumb for next run through loop
         @previous_fen = current_transition.dig("end_position", "fen")
 
-        mem[transition_key] = current_transition
+        mem["moves"][transition_key] = current_transition
       end
     end
 
     def to_json
-      to_h.to_json
+      @to_json ||= to_h.to_json
     end
 
     private

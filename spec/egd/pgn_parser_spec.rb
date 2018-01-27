@@ -143,5 +143,18 @@ RSpec.describe Egd::PgnParser do
         )
       end
     end
+
+    context "when called with the 11 pgn with broken header" do
+      let(:pgn) { example_pgn("11") }
+
+      it "parses the header wrongly" do
+        expect(moves).to match(
+          {
+            :game_tags => {"Event"=>"", "Arbiter"=>"Johnny"}, # The event key should get discarded
+            :moves => [{:num=>1, :w=>"e4", :b=>"e5"}]
+          }
+        )
+      end
+    end
   end
 end

@@ -12,7 +12,6 @@ class Egd::PgnParser
     @headers = []
     @movelist = []
     @game_attributes = {}
-    @verbose = true
   end
 
   def call
@@ -23,8 +22,9 @@ class Egd::PgnParser
     while (current_index < @pgn_content.size)
       current_char = @pgn_content[current_index]
       current_index += 1
-      if state==:initial
-        if current_char=='['
+
+      if state == :initial
+        if current_char == '['
           state = :start_parse_header
           next
         elsif (current_char == ' ' || current_char == "\n" || current_char == "\r")
@@ -80,8 +80,8 @@ class Egd::PgnParser
           next
         end
       elsif state == :start_parse_value
-        if current_char=='"'
-          state=:parse_value
+        if current_char == '"'
+          state = :parse_value
           next
         else
           next
@@ -112,13 +112,17 @@ class Egd::PgnParser
 
     # strip out "$n"-like annotations
     move_line.gsub!(%r'\$\d+ ', " ")
+
     # strip out ?! -like annotations
     move_line.gsub!(%r'[?!]+ ', " ")
+
     # strip out +/- like annotations
     move_line.gsub!(%r'(./.)|(= )|(\+\−)|(\-\+)|(\∞)', "")
 
+    # squish whitespace
     move_line = move_line.strip.gsub(%r'\s{2,}', " ")
 
+    # check if move line consists of legit chars only
     if !move_line.match?(%r'\A(?:[[:alnum:]]|[=\-+.#\* ])+\z')
       raise(
         "The PGN move portion has weird characters even after cleaning it.\n"\

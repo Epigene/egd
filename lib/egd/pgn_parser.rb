@@ -110,11 +110,26 @@ class Egd::PgnParser
     while move_line.gsub!(%r'\{[^{}]*\}', ""); end
     while move_line.gsub!(%r'\([^()]*\)', ""); end
 
+    # strip out "$n"-like annotations
+    move_line.gsub!(%r'\$\d+ ', " ")
+    # strip out ?! -like annotations
+    move_line.gsub!(%r'[?!]+ ', " ")
+    # strip out +/- like annotations
+    move_line.gsub!(%r'(./.)|(= )|(\+\−)|(\-\+)|(\∞)', "")
+
     move_line = move_line.strip.gsub(%r'\s{2,}', " ")
+
+    if !move_line.match?(%r'\A(?:[[:alnum:]]|[=\-+.#\* ])+\z')
+      raise(
+        "The PGN move portion has weird characters even after cleaning it.\n"\
+        "Is the PGN valid?\n"\
+        "The moves after cleaning came out as:\n#{move_line}"
+      )
+    end
 
     moves = []
 
-    while move_line.match(%r'\d+\.')
+    while move_line.match?(%r'\d+\.')
       parsed_moves = move_line.match(%r'\A
         (?<move_number>\d+)\.(?<move_chunk>.*?)(?:(?<remainder>\d+\..*\z)|\z)
       'x)
@@ -122,6 +137,8 @@ class Egd::PgnParser
       move_number = parsed_moves[:move_number]
       move_chunk = parsed_moves[:move_chunk] #=> " e4 c5 "
       move_line = parsed_moves[:remainder].to_s.strip
+
+      # a good place to DEBUG
 
       next if !move_chunk
 

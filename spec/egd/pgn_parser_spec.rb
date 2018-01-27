@@ -100,7 +100,7 @@ RSpec.describe Egd::PgnParser do
       it "parses a PGN with all manner of annotations, stripping themm off correctly" do
         expect(subject).to match({
           moves: [
-            {:num=>1, :w=>"d4", :b=>"d5"}
+            {:num=>1, :w=>"d4", :b=>"d5"},
             {:num=>2, :w=>"g4"}
           ]
         })
@@ -124,12 +124,23 @@ RSpec.describe Egd::PgnParser do
       let(:pgn) { example_pgn("08") }
 
       it "parses a PGN with play time comments from Chess.com" do
-        expect(subject).to match({
+        expect(moves).to match({
+          game_tags: anything,
           moves: array_including(
             {:num=>64, :w=>"Qaa4+", b: "Kc3"},
-            {:num=>5, :w=>"Qgd4#"}
+            {:num=>65, :w=>"Qgd4#"}
           )
         })
+      end
+    end
+
+    context "when called with the invalid 10 pgn" do
+      let(:pgn) { example_pgn("10") }
+
+      it "raises a runtime error about PGN being invalid" do
+        expect{ subject }.to raise_error(
+          RuntimeError, %r'Is the PGN valid\?'
+        )
       end
     end
   end

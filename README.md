@@ -149,6 +149,7 @@ EGD tries to provide the maximum of meta-information about a move a programmed s
 Currently outputted keys are:
 ```rb
 "move" => {
+  "player"=>"w", # w for White and b for Black
   "san" => "exd6", # the Short Algebraic Notation from provided PGN
   "lran" => "e5xd6", # EGDs semi-custom Long Reversible Algebraic Notation
   "from_square" => "e5",

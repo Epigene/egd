@@ -98,7 +98,7 @@ A (very short) game that can be represented in algebraic notation as `1. e4 e5`
 
 
 ```rb
-egd = Egd::Builder.new("1. e4 e5").to_json
+egd = Egd::Builder.new("1. e4 e5")
 
 egd.to_h #=>
 # {

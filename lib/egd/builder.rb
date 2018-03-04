@@ -13,7 +13,8 @@ module Egd
       return @to_h if defined?(@to_h)
 
       @to_h = {}
-      @to_h["game_tags"] = game_tags
+
+      @to_h["game_tags"] = {"Result" => result_from_moves}.merge(game_tags)
       @to_h["moves"] = {}
 
       @previous_fen = Egd::FenBuilder::NULL_FEN
@@ -76,6 +77,13 @@ module Egd
 
       def parsed_pgn
         @parsed_pgn ||= Egd::PgnParser.new(pgn).call
+      end
+
+      def result_from_moves
+        last_move_san = moves.last.split(" ").last #=> c4
+        possible_result = pgn.split(last_move_san).last.strip
+
+        possible_result == "" ? "*" : possible_result
       end
 
   end

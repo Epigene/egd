@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    egd (1.0.1)
+    egd (1.0.2)
       pgn (~> 0.2.0)
 
 GEM

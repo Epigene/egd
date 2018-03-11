@@ -139,10 +139,22 @@ RSpec.describe Egd::Builder do
     context "when initialized with the 04 PGN, a draw without headers" do
       let(:pgn) { example_pgn("04") }
 
-      it "returns a EGD hash represenations of the game, with result header added" do
+      it "returns a EGD hash represenation of the game, with result header added" do
         expect(hash).to match(hash_including(
           "game_tags" => hash_including(
             "Result"=> "1/2-1/2",
+          )
+        ))
+      end
+    end
+
+    context "when initialized with the 05 PGN, a game without tags or clear termination" do
+      let(:pgn) { example_pgn("05") }
+
+      it "returns a EGD hash represenation of the game, with result set to '*'" do
+        expect(hash).to match(hash_including(
+          "game_tags" => hash_including(
+            "Result"=> "*",
           )
         ))
       end

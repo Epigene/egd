@@ -6,7 +6,7 @@ module Egd
     attr_reader :pgn
 
     def initialize(pgn)
-      @pgn = pgn
+      @pgn = pgn.strip
     end
 
     def to_h
@@ -83,7 +83,11 @@ module Egd
         last_move_san = moves.last.split(" ").last #=> c4
         possible_result = pgn.split(last_move_san).last.strip
 
-        possible_result == "" ? "*" : possible_result
+        if possible_result.match?(%r'(/)|(-)|(\*)')
+          possible_result
+        else
+          "*"
+        end
       end
 
   end

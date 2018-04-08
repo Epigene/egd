@@ -5,7 +5,7 @@ module Egd
     # and a tells you what kind of move occured, in more detail than SAN
 
     # Theoretically a start and end fen would suffice, but having move in SAN,
-    # which we do, allows skipping some hard procesing parts.
+    # which we do, allows skipping some hard processing parts.
 
     attr_reader :start_fen, :move, :end_fen
 
@@ -116,6 +116,10 @@ module Egd
         end.detect do |hash|
           hash[:to] == "-"
         end[:square]
+      rescue
+        raise(
+          "PGN error!\nChanging '#{@start_fen}' via '#{@move}' to '#{end_fen}' does not add up."
+        )
       end
 
       def to_square

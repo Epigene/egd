@@ -131,6 +131,8 @@ module Egd
         )
       end
 
+      binding.pry
+
       moves = []
 
       while move_line.match?(%r'\d+\.')

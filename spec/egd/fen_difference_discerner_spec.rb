@@ -210,5 +210,16 @@ RSpec.describe Egd::FenDifferenceDiscerner do
       end
     end
 
+    context "when given fen1 + move result in a different fen2 than given (invalid PGN)" do
+      let(:fen1) { "8/1K6/8/8/Q5Q1/2k5/8/8 w - - 5 65" }
+      let(:move) { "Qgd5#" }
+      let(:fen2) { "8/1K6/8/3Q4/Q5Q1/2k5/8/8 b - - 6 65" }
+
+      it "raises a descriptive error" do
+        expect{ the_difference }.to raise_error(
+          RuntimeError, %r'PGN error!'
+        )
+      end
+    end
   end
 end
